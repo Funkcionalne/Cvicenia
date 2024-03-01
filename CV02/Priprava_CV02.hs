@@ -3,6 +3,7 @@ import Test.QuickCheck
 import Text.Show.Functions
 import Data.List
 
+
 -- pocet 3906
 -- slova dlzky 3 nad abecedou
 slova3 :: [Char] -> [String]

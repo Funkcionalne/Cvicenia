@@ -8,11 +8,11 @@ import Test.QuickCheck   -- toto vam asi nepojde, kym si neodinstalujete balik Q
                          
 -- slova dlzky 3 nad abecedou - urobte pomocou listcomprehension
 slova3 :: [Char] -> [String]
-slova3 abeceda = [[ch1, ch2, ch3] | ch1 <- abeceda, ch2 <- abeceda, ch3 <- abeceda]
+slova3 abc = [[x,y,z]|x<-abc, y<-abc, z<-abc]
 
 -- pocet slov je |abeceda|^3
 -- overte hypotezu pomocou quickCheck
-qchSlova3 = quickCheck (\abeceda -> length abeceda < 20 ==> (length abeceda)^3 == length (slova3 abeceda) )
+qchSlova3 = quickCheck(\abeceda -> (length abeceda < 100) ==> (length abeceda) ^ 3 == (length $ slova3 abeceda))
 
 ------------------------------------------------------------------------------------------
 
@@ -20,65 +20,66 @@ qchSlova3 = quickCheck (\abeceda -> length abeceda < 20 ==> (length abeceda)^3 =
 -- slova :: [Char] -> Int -> [String]
 slova :: String -> Int -> [String]
 slova abeceda 0 = [""]
-slova abeceda k = [y:x | x <- slova abeceda (k-1), y <- abeceda]
+slova abeceda k = [x:y| x <- abeceda, y <- slova abeceda (k-1)]
 
 -- zistite, kolko ich je, a overte hypotezu, ze mate ich spravy pocet
 pocetSlova :: [Char] -> Int -> Int 
-pocetSlova abeceda k = (length abeceda)^k
+pocetSlova abeceda k = length abeceda ^ k
 
-qchSlova = quickCheck (\abeceda -> \k -> length abeceda < 20 && k <= 6 && k >= 0 ==> (length abeceda)^k == length (slova abeceda k) )
+qchSlova = quickCheck(\abeceda -> \k1 -> let k = k1 `mod` 8 in (length abeceda < 10) ==> (pocetSlova abeceda k) == (length $ slova abeceda k))
 
 -- overete hypotezu, ze v zozname nemate ziadne dve rovnake slova
 
-qchSlovaRozne = quickCheck (\abeceda -> \k -> length abeceda < 10 && k <= 4 && k >= 0 && length abeceda == length (nub(abeceda))==> let l = slova abeceda k in length l == length (nub l) )
+qchSlovaRozne = quickCheck(\abeceda -> \k1 -> let k = k1 `mod` 8 in (length abeceda < 10) ==> 
+                let  x = slova abeceda k in length (nub (x)) == length x)
 
 -- overete hypotezu, ze vsetky slova su dlzky k
 
-qchSlovaDlheK = quickCheck (\abeceda -> \k -> length abeceda < 10 && k <= 4 && k >= 0 && length abeceda == length (nub(abeceda))==> all (\s -> length s == k) (slova abeceda k))
+qchSlovaDlheK = quickCheck(\abeceda -> \k1 -> let k = k1 `mod` 8 in (length abeceda < 10) ==> 
+                let  xs = slova abeceda k in null $ filter (\x -> (length x) /= k) xs)
 
 ------------------------------------------------------------------------------------------
 
 -- slova dlzky najviac k
--- slova dlzky najviac k nad abecedou, zle riesenie (zistite, preco je to zle riesenie)
+-- slova dlzky najviac k nad abecedou
 slovaNajviac :: [Char] -> Int -> [String]
-slovaNajviac abeceda 0  = [[]]
-slovaNajviac abeceda k = let p = slovaNajviac abeceda (k-1) in 
-                         p ++ [ ch:w | ch <- abeceda, w <-p]
+slovaNajviac abeceda 0 = [""]
+slovaNajviac abeceda k = "":[x:y|x<-abeceda,y<-slovaNajviac abeceda (k-1)]
 
 -- najdite vzorec na pocet slov dlzky najviac k nad danou abecedou
-pocetSlovaNajviac abeceda k = ()
+pocetSlovaNajviac abeceda k = (((length abeceda) ^ (k+1)) - 1) `div` ((length abeceda) -1)
 
 -- opravte riesenie slovaNajviac tak, aby ste dostali spravne riesenie, aj ked neefektivne
 slovaNajviacNeefektivne :: [Char] -> Int -> [String]
-slovaNajviacNeefektivne abeceda k = nub $ slovaNajviacNeefektivne abeceda k
+slovaNajviacNeefektivne abeceda k = concat [slova abeceda i|i<-[0..k]]
 
 -- overte hypotezu, ze ich je uz spravny pocet
 qchSlovaNajviacNeefektivne = undefined
 
 -- a teraz slovaNajviac napiste slusne a efektivnejsie :)
 slovaNajviacEfektivne :: [Char] -> Int -> [String]
-slovaNajviacEfektivne abeceda k = concat [ slova abeceda d | d <- [0..k]]
+slovaNajviacEfektivne abeceda k = undefined
 
 -- overte hypotezu, ze ich je uz spravny pocet
-qchSlovaNajviacEfektivne = quickCheck (\abeceda -> \k -> length abeceda < 10 && k <= 4 && k >= 0 && length abeceda == length (nub(abeceda)) && length abeceda > 1 ==> let q = length abeceda in (q^(k+1) - 1) `div` (q - 1) == length ( slovaNajviacEfektivne abeceda k) )
-
+qchSlovaNajviacEfektivne = undefined
 
 -----------------------------------------------------------------------------------
 
 -- slova nad abecedou "ab", ktore neobsahuju aa, teda dve acka za sebou
 slovaBezAA :: Int -> [String]
-slovaBezAA 0 = [ [] ]
-slovaBezAA 1 = [ "a", "b" ]
-slovaBezAA k = ['b':w | w <- slovaBezAA (k-1)] ++
-               [ "ab" ++ w | w <- slovaBezAA (k-2) ]
+slovaBezAA 0 = [[]]
+slovaBezAA 1 = ["a","b"]
+slovaBezAA k =  ['b':y|y<-slovaBezAA (k-1)]++
+                [x:'b':y|x<-"a", y<-slovaBezAA (k-2)]
 
-slovaBezAAFilter n = filter (not.isInfixOf "aa") $ slova "ab" n
+-- pomocou filter
+slovaBezAAFilter n = filter (not.isInfixOf "aa") (slova "ab" n)
 
 -- kolko ich je
-pocetSlovaBezAA k = undefined
+pocetSlovaBezAA k = fibonacci k
 
 -- napiste quickCheck, ktory overi hypotezu
-qchSlovaBezAA = undefined
+qchSlovaBezAA = quickCheck(\k1 -> let k = k1 `mod` 20 in (length (slovaBezAA k)) == (pocetSlovaBezAA k))
 
 
 
