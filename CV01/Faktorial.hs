@@ -1,5 +1,8 @@
 module Faktorial where
 
+{-
+.....
+-}
 -- Int
 -- Integer
 fact :: Integer -> Integer
