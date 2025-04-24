@@ -6,8 +6,6 @@ import Text.Show.Functions
 
 -- zdroj http://techtipshoge.blogspot.sk/2011/06/church-number-with-ski-combinators.html
 -- http://www.angelfire.com/tx4/cus/combinator/birds.html
--- zdroj http://techtipshoge.blogspot.sk/2011/06/church-number-with-ski-combinators.html
--- http://www.angelfire.com/tx4/cus/combinator/birds.html
 -- http://dkeenan.com/Lambda/
 -- https://books.google.sk/books/about/To_Mock_a_Mockingbird.html?id=wklinRKAIgQC&redir_esc=y
 
@@ -29,9 +27,18 @@ qch1 = quickCheck((\x -> (((s k) k) x) == x) :: Int->Bool)
 qch2 = quickCheck((\f x y -> ((((s k) s) f) x) y == f x y) :: (Int->Int->Int)->Int->Int->Bool)
 
 -- inak to je church's one
+-- zredukujte: 
 apply'   = s (s k)                            -- ?xy.x y 
+
+-- spustite v interpretri http://ski.aditsu.net/
+-- (S ( (S (K S)) ((S (K K) I)) )) (K I) a b
 apply''  = (s ( (s (k s)) ((s (k k) i)) )) (k i)
+
+
+
 apply'''  = i
+
+------------------------------------------------ takze Ch.one sa da napisat mnohymi sposobmi....
 
 -- Church's numeral  
 -- ?fx.x

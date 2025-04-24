@@ -29,7 +29,7 @@ unify (((Functor f fArgs),(Functor g gArgs)):cs) =
                           else Nothing
 unify ((Var vName, t):cs) = if occurs vName  t then Nothing else add2Maybe (Var vName, t) (unify (substitute'' vName t cs))
 unify ((t, Var vName):cs) = if occurs vName  t then Nothing else add2Maybe (Var vName, t) (unify (substitute'' vName t cs))
-unify ((CN a, CN b):cs) = if a /= b then Nothing else Just cs
+unify ((CN a, CN b):cs) = if a /= b then Nothing else unify cs
 unify ((_, _):cs) = Nothing
 
 e1 = Functor "f" [ Var "X", Var "X" ]               -- f (x, x)
