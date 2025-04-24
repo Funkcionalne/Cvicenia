@@ -13,10 +13,7 @@ e' = Node (Node Nil 1 Nil) 2 (Node Nil 3 Nil)
 qch4 = quickCheckWith stdArgs{ maxSuccess = 100000 } ((\x -> \tree -> (isBVS tree) ==> ((find x tree) == (elem x (flat tree))))::Int->BVS Int->Property)         
 
 insert :: (Ord t) => t -> BVS t -> BVS t
-insert x Nil   = Node Nil x Nil
-insert x tree@(Node left root right) | x == root = tree      
-                                     | x < root  = Node (insert x left) root right                                                      
-                                     | otherwise = Node left root (insert x right)
+insert = undefined
                                                        
 -- e = Node Nil 4 (Node Nil 7 Nil)                                                       
 -- insert 1 e = Node (Node Nil 1 Nil) 4 (Node Nil 7 Nil)
@@ -29,8 +26,7 @@ qch5 = quickCheckWith stdArgs{ maxSuccess = 100000 }
 
 -- velkost stromu je pocet Node uzlov
 size :: BVS t -> Int
-size Nil = 0
-size (Node left root right) = (size left) + (size right) + 1
+size = undefined
 
 -- velkost stromu po inserte je o jedna vacsia, asi neplati, ak sa x tam uz nachadza
 qch6 = quickCheckWith stdArgs{ maxSuccess = 100000 }(
@@ -47,9 +43,7 @@ qch8 = quickCheckWith stdArgs{ maxSuccess = 100000 }(
 
 -- maximalny v strome, ale musi byt isBVS
 maxBVS                        :: BVS t -> t
-maxBVS Nil                    = error "something wrong"
-maxBVS (Node left root Nil)   = root
-maxBVS (Node left root right) = maxBVS right
+maxBVS = undefined
 
 -- delete v strome, ale musi byt isBVS
 delete :: (Ord t) => t -> BVS t -> BVS t
